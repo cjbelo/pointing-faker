@@ -12,10 +12,10 @@ const {
   setVote,
   resetVotes,
   setStoryTitle,
-  getStoryTitle
+  getStoryTitle,
 } = require("./users.js");
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 const router = require("./router");
 
@@ -25,7 +25,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketio(server);
 
-io.on("connection", socket => {
+io.on("connection", (socket) => {
   socket.on("join", ({ name, room }, callback) => {
     const { error, user } = addUser({ id: socket.id, name, room });
 
@@ -34,12 +34,12 @@ io.on("connection", socket => {
     socket.emit("message", {
       users: getUsersInRoom(user.room),
       message: `Hello ${user.name}, welcome to the board`,
-      variant: "info"
+      variant: "info",
     });
     socket.broadcast.to(user.room).emit("message", {
       users: getUsersInRoom(user.room),
       message: `${user.name}, has joined!`,
-      variant: "info"
+      variant: "info",
     });
 
     socket.join(user.room);
@@ -53,7 +53,7 @@ io.on("connection", socket => {
     return callback(users);
   });
 
-  socket.on("getRooms", callback => {
+  socket.on("getRooms", (callback) => {
     const rooms = getRooms();
     return callback(rooms);
   });
@@ -67,12 +67,12 @@ io.on("connection", socket => {
     socket.emit("message", {
       users,
       message: `You voted ${vote}`,
-      variant: "success"
+      variant: "success",
     });
     socket.broadcast.to(user.room).emit("message", {
       users,
       message: `${user.name}, voted!`,
-      variant: "success"
+      variant: "success",
     });
 
     callback();
@@ -86,13 +86,13 @@ io.on("connection", socket => {
       reset: true,
       users,
       message: "You reset votes",
-      variant: "info"
+      variant: "info",
     });
     socket.broadcast.to(user.room).emit("message", {
       reset: true,
       users,
       message: `${user.name} (host) reset votes`,
-      variant: "info"
+      variant: "info",
     });
   });
 
@@ -103,35 +103,35 @@ io.on("connection", socket => {
     socket.broadcast.to(user.room).emit("storyMessage", {
       story,
       message: `${user.name} (host), updated the story`,
-      variant: "info"
+      variant: "info",
     });
 
     callback();
   });
 
-  socket.on("showVotes", callback => {
+  socket.on("showVotes", (callback) => {
     const user = getUser(socket.id);
     const users = getUsersInRoom(user.room);
 
     socket.broadcast.to(user.room).emit("resultMessage", {
       show: true,
-      users
+      users,
     });
 
     callback();
   });
 
-  socket.on("doneVoting", callback => {
+  socket.on("doneVoting", (callback) => {
     const user = getUser(socket.id);
     const users = resetVotes(user.room);
 
     socket.emit("resultMessage", {
       show: false,
-      users
+      users,
     });
     socket.broadcast.to(user.room).emit("resultMessage", {
       show: false,
-      users
+      users,
     });
 
     callback();
@@ -145,7 +145,7 @@ io.on("connection", socket => {
       io.to(user.room).emit("message", {
         users: getUsersInRoom(user.room),
         message: `${user.name} has left`,
-        variant: "error"
+        variant: "error",
       });
     }
   });

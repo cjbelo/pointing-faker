@@ -17,51 +17,47 @@ import Copyright from "../../components/Copyright/index";
 import * as Session from "../../utils/session";
 import * as Helper from "../../utils/helper";
 
-const ENDPOINT = "172.168.0.76:5000";
-// const ENDPOINT = "192.168.1.9:5000";
+// const ENDPOINT = "172.168.0.76:5000";
+const ENDPOINT = "192.168.1.44:5001";
 let socket;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
-    backgroundImage:
-      "url(https://source.unsplash.com/collection/137627/calm-wallpapers)",
+    backgroundImage: "url(https://source.unsplash.com/collection/137627/calm-wallpapers)",
     backgroundRepeat: "no-repeat",
-    backgroundColor:
-      theme.palette.type === "dark"
-        ? theme.palette.grey[900]
-        : theme.palette.grey[50],
+    backgroundColor: theme.palette.type === "dark" ? theme.palette.grey[900] : theme.palette.grey[50],
     backgroundSize: "cover",
     backgroundPosition: "center",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   container: {
     width: "100%",
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   paper: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   note: {
     marginTop: theme.spacing(1),
     fontSize: 12,
-    color: theme.palette.grey[700]
-  }
+    color: theme.palette.grey[700],
+  },
 }));
 
 const LoginPage = ({ history, match }) => {
@@ -82,7 +78,7 @@ const LoginPage = ({ history, match }) => {
       socket = io(ENDPOINT);
 
       if (paramRoom && Helper.isMd5(paramRoom)) {
-        socket.emit("getRooms", rooms => {
+        socket.emit("getRooms", (rooms) => {
           setRoom(paramRoom);
           if (rooms.indexOf(paramRoom) > -1) {
             setButtonLabel("Join");
@@ -95,13 +91,13 @@ const LoginPage = ({ history, match }) => {
     }
   }, [history, match.params]);
 
-  const formSubmit = e => {
+  const formSubmit = (e) => {
     e.preventDefault();
     const name = e.target.name.value.trim();
 
     if (name) {
-      socket.emit("getUsersInRoom", room, users => {
-        const user = users ? users.find(user => user.name === name) : undefined;
+      socket.emit("getUsersInRoom", room, (users) => {
+        const user = users ? users.find((user) => user.name === name) : undefined;
         if (user) {
           setShowError("Name is already taken!");
         } else {
@@ -126,7 +122,7 @@ const LoginPage = ({ history, match }) => {
     setShowError("");
   };
 
-  const handleKeyUp = e => {
+  const handleKeyUp = (e) => {
     const { value } = e.target;
     if (value && showError && e.key !== "Enter") {
       setShowError("");
@@ -174,11 +170,7 @@ const LoginPage = ({ history, match }) => {
               >
                 {buttonLabel}
               </Button>
-              {isHost && (
-                <Typography className={classes.note}>
-                  * You are hosting a session
-                </Typography>
-              )}
+              {isHost && <Typography className={classes.note}>* You are hosting a session</Typography>}
             </form>
             <Box mt={8}>
               <Copyright />

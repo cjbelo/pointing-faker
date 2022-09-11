@@ -26,7 +26,7 @@
   "scripts": {
     "start": "concurrently \"nodemon server\" \"react-scripts start\"",
     "start:server": "nodemon server",
-    "start:react": "react-scripts start --host 172.168.0.76",
+    "start:react": "react-scripts start --host 192.168.1.44",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

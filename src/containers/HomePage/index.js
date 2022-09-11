@@ -25,26 +25,26 @@ import ListItemComp from "../../components/ListItem/index";
 import Copyright from "../../components/Copyright/index";
 import Result from "../../components/Result/index";
 
-const ENDPOINT = "172.168.0.76:5000";
-// const ENDPOINT = "192.168.1.9:5000";
+// const ENDPOINT = "172.168.0.76:5000";
+const ENDPOINT = "192.168.1.44:5001";
 let socket;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   header: {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(1.5, 0)
+    padding: theme.spacing(1.5, 0),
   },
   cardGrid: {
     paddingTop: theme.spacing(6),
-    paddingBottom: theme.spacing(6)
+    paddingBottom: theme.spacing(6),
   },
   footer: {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6)
+    padding: theme.spacing(6),
   },
   list: {
     width: "100%",
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
   },
   listSubheader: {
     backgroundColor: theme.palette.primary.main,
@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: 16,
     textAlign: "center",
     paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1)
+    paddingBottom: theme.spacing(1),
   },
   invite: {
     flexDirection: "column",
@@ -62,30 +62,30 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(1),
       display: "flex",
       width: "100%",
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     "& .label": {
       marginTop: 30,
-      fontSize: 20
+      fontSize: 20,
     },
     "& .inviteInput": {
       marginTop: 10,
-      marginBottom: 10
-    }
+      marginBottom: 10,
+    },
   },
   alerts: {
     "& [role='alert']:not(:last-child)": {
-      marginBottom: 5
-    }
+      marginBottom: 5,
+    },
   },
   titleCont: {
     display: "flex",
     alignItems: "center",
     height: 42,
     "& .icon": {
-      color: theme.palette.grey[600]
-    }
-  }
+      color: theme.palette.grey[600],
+    },
+  },
 }));
 
 const cards = [0, "½", 1, 2, 3, 5, 8, 13, 20, 40, 100, "C"];
@@ -111,11 +111,7 @@ const HomePage = ({ history, match }) => {
 
     const isLoggedIn = Session.get("isLoggedIn");
     const { room: paramRoom } = match.params;
-    const roomHash = !paramRoom
-      ? ""
-      : Helper.isMd5(paramRoom)
-      ? `/${paramRoom}`
-      : "";
+    const roomHash = !paramRoom ? "" : Helper.isMd5(paramRoom) ? `/${paramRoom}` : "";
 
     if (!isLoggedIn) {
       history.push(`/login${roomHash}`);
@@ -129,7 +125,7 @@ const HomePage = ({ history, match }) => {
       setName(name);
       setRoom(room);
 
-      socket.emit("join", { name, room }, ret => {
+      socket.emit("join", { name, room }, (ret) => {
         setStory(ret.title);
         if (ret.error) {
           console.log("Join error:", ret.error);
@@ -144,7 +140,7 @@ const HomePage = ({ history, match }) => {
   }, [history, match.params]);
 
   useEffect(() => {
-    socket.on("message", obj => {
+    socket.on("message", (obj) => {
       if (obj.reset) {
         setVote(null);
         setShowResult(false);
@@ -168,11 +164,11 @@ const HomePage = ({ history, match }) => {
         }
       }
     });
-    socket.on("storyMessage", obj => {
+    socket.on("storyMessage", (obj) => {
       setStory(obj.story);
       enqueueSnackbar(obj.message, { variant: obj.variant });
     });
-    socket.on("resultMessage", obj => {
+    socket.on("resultMessage", (obj) => {
       setPlayers(obj.users);
       setShowResult(obj.show);
       setVote(null);
@@ -184,7 +180,7 @@ const HomePage = ({ history, match }) => {
     window.location.href = `/login`;
   };
 
-  const handleSetVote = card => {
+  const handleSetVote = (card) => {
     socket.emit("setVote", card, () => {
       setVote(card);
     });
@@ -222,8 +218,8 @@ const HomePage = ({ history, match }) => {
               <React.Fragment>
                 <TextField
                   value={story}
-                  onChange={e => setStory(e.target.value)}
-                  onKeyUp={e => {
+                  onChange={(e) => setStory(e.target.value)}
+                  onKeyUp={(e) => {
                     if (e.key === "Escape") {
                       setStory(oldStory);
                       setEditing(false);
@@ -268,21 +264,11 @@ const HomePage = ({ history, match }) => {
           <Grid container spacing={6}>
             <Grid item xs={12} md={8}>
               {showResult ? (
-                <Result
-                  cards={cards}
-                  players={players}
-                  hideResult={hideResult}
-                  isHost={host}
-                />
+                <Result cards={cards} players={players} hideResult={hideResult} isHost={host} />
               ) : (
                 <Grid container spacing={2}>
-                  {cards.map(card => (
-                    <CardItem
-                      card={card}
-                      vote={vote}
-                      setVote={handleSetVote}
-                      key={card}
-                    />
+                  {cards.map((card) => (
+                    <CardItem card={card} vote={vote} setVote={handleSetVote} key={card} />
                   ))}
                 </Grid>
               )}
@@ -293,38 +279,21 @@ const HomePage = ({ history, match }) => {
                   className={classes.list}
                   disablePadding
                   subheader={
-                    <ListSubheader
-                      component="div"
-                      className={classes.listSubheader}
-                    >
+                    <ListSubheader component="div" className={classes.listSubheader}>
                       Players...
                     </ListSubheader>
                   }
                 >
-                  {players.map(p => (
-                    <ListItemComp
-                      key={p.id}
-                      player={p}
-                      showResult={showResult}
-                    />
+                  {players.map((p) => (
+                    <ListItemComp key={p.id} player={p} showResult={showResult} />
                   ))}
                   <ListItem className={classes.invite}>
                     {host && (
                       <Box className="actionButtons">
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          disabled={!canShowVote}
-                          onClick={showVotes}
-                        >
+                        <Button variant="contained" color="primary" disabled={!canShowVote} onClick={showVotes}>
                           Show Votes
                         </Button>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          disabled={!canReset}
-                          onClick={resetVotes}
-                        >
+                        <Button variant="contained" color="secondary" disabled={!canReset} onClick={resetVotes}>
                           Reset Votes
                         </Button>
                       </Box>
@@ -337,9 +306,9 @@ const HomePage = ({ history, match }) => {
                       className="inviteInput"
                       value={`${window.location.href}login/${room}`}
                       inputProps={{
-                        readOnly: true
+                        readOnly: true,
                       }}
-                      onClick={event => event.target.select()}
+                      onClick={(event) => event.target.select()}
                     />
                   </ListItem>
                 </List>
@@ -362,7 +331,7 @@ const IntegrationNotistack = ({ history, match }) => {
       autoHideDuration={4000}
       anchorOrigin={{
         vertical: "bottom",
-        horizontal: "right"
+        horizontal: "right",
       }}
     >
       <HomePage history={history} match={match} />
